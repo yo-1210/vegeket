@@ -1,5 +1,6 @@
 from django.db import models
 import datetime
+import json
 from django.contrib.auth import get_user_model
  
  
@@ -16,8 +17,8 @@ class Order(models.Model):
     is_confirmed = models.BooleanField(default=False)
     amount = models.PositiveIntegerField(default=0)
     tax_included = models.PositiveIntegerField(default=0)
-    items = models.JSONField()
-    shipping = models.JSONField()
+    items = models.TextField(default='[]')  # JSONデータを文字列として保存
+    shipping = models.TextField(default='{}')  # JSONデータを文字列として保存
     shipped_at = models.DateTimeField(blank=True, null=True)
     canceled_at = models.DateTimeField(blank=True, null=True)
     memo = models.TextField(blank=True)
@@ -26,3 +27,15 @@ class Order(models.Model):
  
     def __str__(self):
         return self.id
+ 
+    def get_items(self):
+        return json.loads(self.items)
+ 
+    def set_items(self, value):
+        self.items = json.dumps(value)
+ 
+    def get_shipping(self):
+        return json.loads(self.shipping)
+ 
+    def set_shipping(self, value):
+        self.shipping = json.dumps(value)
